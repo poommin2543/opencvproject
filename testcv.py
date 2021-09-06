@@ -1,46 +1,43 @@
-
-'''import cv2
-import numpy as np
-img = cv2.imread("./image/lines.png")
-gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-edges = cv2.Canny(gray,75,150)
-
-lines = cv2.HoughLinesP(edges,1,np.pi/180,20,maxLineGap=50 ,minLineLength=0)
-print(lines)
-for line in lines:
-    x1 ,y1 ,x2 ,y2 = line[0]
-    cv2.line(img,(x1 ,y1),(x2 ,y2),(0,255,0),3)
-
-cv2.imshow("edges", edges)
-cv2.imshow("Image", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()'''
-import numpy as np
+import matplotlib.pylab as plt
 import cv2
-video = cv2.VideoCapture('./image/IMG_4198.MOV')
+import numpy as np
 
+image = cv2.imread('IMG_4244.png')
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-while True:
-    ret, frame = video.read()
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    low_yellow = np.array([18, 94, 140])
-    up_yellow = np.array([48, 255, 255])
-    
-    mask = cv2.inRange(hsv, low_yellow, up_yellow)
+print(image.shape)
+height = image.shape[0]
+width = image.shape[1]
 
+region_of_interest_vertices = [
+    (0, height),
+    (width/2, height/3),
+    (width, height)
+]
 
-
-    if not ret:
-        video = cv2.VideoCapture('./image/video1.mp4')
-        continue
-
-   
-    cv2.imshow('frame', hsv)
-    cv2.imshow('test',mask)
-
-    k = cv2.waitKey(25) 
-    if k == 27:
-        break
-
-video.release()
-cv2.destroyAllWindows()
+points = np.array([[0, 450], [1920, 450], [1920,1080], [0, 1080]])
+print(region_of_interest_vertices)
+def region_of_interest(img, vertices):
+    mask = np.zeros_like(img)
+    #mask = img
+    match_mask_color=(255,0,255)
+    print(match_mask_color)
+    #cv2.fillPoly(mask, vertices, match_mask_color)
+    cv2.fillPoly(mask, [points], match_mask_color)
+    masked_image = cv2.bitwise_and(img, mask)
+    return masked_image
+cropped_image = region_of_interest(image,
+                np.array([region_of_interest_vertices], np.int32),)
+gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+edges = cv2.Canny(gray,50,150,apertureSize = 3)
+#cv2.imshow('edges', edges)
+lines = cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength=100,maxLineGap=10)
+for line in lines:
+    x1,y1,x2,y2 = line[0]
+    cv2.line(image,(x1,y1),(x2,y2),(0,255,0),5)
+#cv2.imshow('image', cropped_image)
+#k = cv2.waitKey(0)
+#cv2.destroyAllWindows()
+#print(cropped_image)
+plt.imshow(image)
+plt.show()
