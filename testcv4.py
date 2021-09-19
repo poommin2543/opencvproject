@@ -16,9 +16,6 @@ region_of_interest_vertices = [
     (width, height)
 ]
 
-
-
-
 points = np.array([[0, 450], [1920, 450], [1920,1080], [0, 1080]])
 print(region_of_interest_vertices)
 def region_of_interest(img, vertices):

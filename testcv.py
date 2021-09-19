@@ -19,16 +19,17 @@ region_of_interest_vertices = [
 IMAGE_H = 1080
 IMAGE_W = 1920
 
-src = np.float32([[0, IMAGE_H], [1500, IMAGE_H], [0, 0], [IMAGE_W, 0]])
-dst = np.float32([[700, IMAGE_H], [900, IMAGE_H], [0, 0], [IMAGE_W, 0]])
-M = cv2.getPerspectiveTransform(src, dst) # The transformation matrix
-Minv = cv2.getPerspectiveTransform(dst, src) # Inverse transformation
+#src = np.float32([[0, IMAGE_H], [1500, IMAGE_H], [0, 0], [IMAGE_W, 0]])
+#dst = np.float32([[700, IMAGE_H], [900, IMAGE_H], [0, 0], [IMAGE_W, 0]])
 
-img = image[450:(450+IMAGE_H), 0:IMAGE_W] # Apply np slicing for ROI crop
-warped_img = cv2.warpPerspective(img, M, (IMAGE_W, IMAGE_H)) # Image warping
+#M = cv2.getPerspectiveTransform(src, dst) # The transformation matrix
+#Minv = cv2.getPerspectiveTransform(dst, src) # Inverse transformation
+
+#img = image[450:(450+IMAGE_H), 0:IMAGE_W] # Apply np slicing for ROI crop
+#warped_img = cv2.warpPerspective(img, M, (IMAGE_W, IMAGE_H)) # Image warping
 #plt.imshow(cv2.cvtColor(warped_img, cv2.COLOR_BGR2RGB)) # Show results
 #plt.show()
-image  = (cv2.cvtColor(warped_img, cv2.COLOR_BGR2RGB))
+#image  = (cv2.cvtColor(warped_img, cv2.COLOR_BGR2RGB))
 points = np.array([[0, 450], [1920, 450], [1920,1080], [0, 1080]])
 print(region_of_interest_vertices)
 def region_of_interest(img, vertices):

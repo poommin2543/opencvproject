@@ -4,6 +4,7 @@
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Finding-Car-Lanes-Without-Deep-Learning" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Lane-Lines-Detection-Python-OpenCV" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Lanes-Detection-with-OpenCV" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/SelfDrivingCar" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/advanced-lane-detection" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/python-autoclicker" vcs="Git" />
