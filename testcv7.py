@@ -63,10 +63,6 @@ for line in lines:
     # print(line)
 
 
-# ptD = [770,488]
-# ptC = [1145,486]
-# ptA = [25,859]
-# ptB = [1756,966]
 ptD = [700,500]
 ptC = [1200,486]
 ptA = [0,800]
@@ -78,40 +74,36 @@ pts1 = np.float32([ptD,ptC,ptA,ptB])
 pts2 = np.float32([[0,0],[wi,0],[0,hi],[wi,hi]])
 
 matrix = cv2.getPerspectiveTransform(pts1,pts2)
-result = cv2.warpPerspective(image,matrix,(wi,hi))
+#result = cv2.warpPerspective(image,matrix,(wi,hi))
+# Forward transform
+result = cv2.perspectiveTransform(image, matrix,(wi,hi))
 
+# inv_trans = np.linalg.pinv(image)
+# round_tripped = cv2.perspectiveTransform(image, inv_trans)
 
-# a = cv2.getTrackbarPos('min','image')
-# b = cv2.getTrackbarPos('max','image')
+# font = cv2.FONT_HERSHEY_SIMPLEX
+# st = 1500
+# cv2.line(result,(350,st),(150,st),(255,0,0),50)
+# cv2.line(result,(1400,st),(1200,st),(255,0,0),50)
 #
 #
-# cv2.createTrackbar('min','image',0,255,nothing)
-# cv2.createTrackbar('max','image',0,255,nothing)
-# thresh = cv2.threshold(result,a,b,cv2.THRESH_BINARY_INV)
-# print(result)
-# langht = cv2.line(result,(1250,1400),(300,1400),(255,0,0),50)
-# print(langht)
-font = cv2.FONT_HERSHEY_SIMPLEX
-st = 1500
-cv2.line(result,(350,st),(150,st),(255,0,0),50)
-cv2.line(result,(1400,st),(1200,st),(255,0,0),50)
+# cv2.line(result,(350,st-340),(150,st-340),(255,0,0),50)
+# cv2.line(result,(1400,st-340),(1200,st-340),(255,0,0),50)
+# cv2.putText(result, '1 M', (600,st-340), font, 5,
+#                   (255,0,0), 20, cv2.LINE_AA, False)
+#
+# cv2.line(result,(350,st-340*2),(150,st-340*2),(255,0,0),50)
+# cv2.line(result,(1400,st-340*2),(1200,st-340*2),(255,0,0),50)
+# cv2.putText(result, '2 M', (600,st-340*2), font, 5,
+#                   (255,0,0), 20, cv2.LINE_AA, False)
+#
+# cv2.line(result,(350,st-340*3),(150,st-340*3),(255,0,0),50)
+# cv2.line(result,(1400,st-340*3),(1200,st-340*3),(255,0,0),50)
+# cv2.putText(result, '3 M', (600,st-340*3), font, 5,
+#                   (255,0,0), 20, cv2.LINE_AA, False)
 
 
-cv2.line(result,(350,st-340),(150,st-340),(255,0,0),50)
-cv2.line(result,(1400,st-340),(1200,st-340),(255,0,0),50)
-cv2.putText(result, '1 M', (600,st-340), font, 5,
-                  (255,0,0), 20, cv2.LINE_AA, False)
 
-cv2.line(result,(350,st-340*2),(150,st-340*2),(255,0,0),50)
-cv2.line(result,(1400,st-340*2),(1200,st-340*2),(255,0,0),50)
-cv2.putText(result, '2 M', (600,st-340*2), font, 5,
-                  (255,0,0), 20, cv2.LINE_AA, False)
-
-cv2.line(result,(350,st-340*3),(150,st-340*3),(255,0,0),50)
-cv2.line(result,(1400,st-340*3),(1200,st-340*3),(255,0,0),50)
-cv2.putText(result, '3 M', (600,st-340*3), font, 5,
-                  (255,0,0), 20, cv2.LINE_AA, False)
-print(np.linalg.inv(result))
 plt.imshow(result)
 # plt.imshow(image)
 plt.show()

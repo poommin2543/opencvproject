@@ -64,6 +64,18 @@ def process(image):
     for line in lines:
         x1, y1, x2, y2 = line[0]
         cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 10)
+        st = 1500
+        cv2.line(image, (x1, st), (x2, st), (255, 0, 0), 10)
+        cv2.line(image, (1400, st), (1200, st), (255, 0, 0), 10)
+
+        cv2.line(image, (x1, st - 340), (x2, st - 340), (255, 0, 0), 10)
+        cv2.line(image, (1400, st - 340), (1200, st - 340), (255, 0, 0), 10)
+
+        cv2.line(image, (x1, st - 340 * 2), (x2, st - 340 * 2), (255, 0, 0), 10)
+        cv2.line(image, (1400, st - 340 * 2), (1200, st - 340 * 2), (255, 0, 0), 10)
+
+        cv2.line(image, (x1, st - 340 * 3), (x2, st - 340 * 3), (255, 0, 0), 10)
+        cv2.line(image, (1400, st - 340 * 3), (1200, st - 340 * 3), (255, 0, 0), 10)
 
     ptD = [700, 500]
     ptC = [1200, 486]
@@ -77,6 +89,8 @@ def process(image):
 
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
     result = cv2.warpPerspective(image, matrix, (wi, hi))
+
+
     return result
 
 while cap.isOpened():
