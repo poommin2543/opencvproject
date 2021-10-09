@@ -29,31 +29,7 @@ def region_of_interest(img, vertices):
     return masked_image
 
 def process(image):
-    '''IMAGE_H = 1080
-    IMAGE_W = 1920
-
-    src = np.float32([[0, IMAGE_H], [1500, IMAGE_H], [0, 0], [IMAGE_W, 0]])
-    dst = np.float32([[700, IMAGE_H], [900, IMAGE_H], [0, 0], [IMAGE_W, 0]])
-    M = cv2.getPerspectiveTransform(src, dst)  # The transformation matrix
-    Minv = cv2.getPerspectiveTransform(dst, src)  # Inverse transformation
-
-    img = image[450:(450 + IMAGE_H), 0:IMAGE_W]  # Apply np slicing for ROI crop
-    warped_img = cv2.warpPerspective(img, M, (IMAGE_W, IMAGE_H))  # Image warping
-    image = (cv2.cvtColor(warped_img, cv2.COLOR_BGR2RGB))'''
-    # ptD = [770, 488]
-    # ptC = [1145, 486]
-    # ptA = [25, 859]
-    # ptB = [1756, 966]
-    #
-    # wi, hi = 500, 500
-    #
-    # pts1 = np.float32([ptD, ptC, ptA, ptB])
-    # pts2 = np.float32([[0, 0], [wi, 0], [0, hi], [wi, hi]])
-    #
-    # matrix = cv2.getPerspectiveTransform(pts1, pts2)
-    # result = cv2.warpPerspective(image, matrix, (wi, hi))
-    #
-    # image = result
+    copy_image = image
     cropped_image = region_of_interest(image,
                                        np.array([region_of_interest_vertices], np.int32), )
     gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -64,18 +40,8 @@ def process(image):
     for line in lines:
         x1, y1, x2, y2 = line[0]
         cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 10)
-        st = 1500
-        cv2.line(image, (x1, st), (x2, st), (255, 0, 0), 10)
-        cv2.line(image, (1400, st), (1200, st), (255, 0, 0), 10)
 
-        cv2.line(image, (x1, st - 340), (x2, st - 340), (255, 0, 0), 10)
-        cv2.line(image, (1400, st - 340), (1200, st - 340), (255, 0, 0), 10)
 
-        cv2.line(image, (x1, st - 340 * 2), (x2, st - 340 * 2), (255, 0, 0), 10)
-        cv2.line(image, (1400, st - 340 * 2), (1200, st - 340 * 2), (255, 0, 0), 10)
-
-        cv2.line(image, (x1, st - 340 * 3), (x2, st - 340 * 3), (255, 0, 0), 10)
-        cv2.line(image, (1400, st - 340 * 3), (1200, st - 340 * 3), (255, 0, 0), 10)
 
     ptD = [700, 500]
     ptC = [1200, 486]
@@ -91,7 +57,38 @@ def process(image):
     result = cv2.warpPerspective(image, matrix, (wi, hi))
 
 
-    return result
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    st = 1500
+    cv2.line(result, (350, st), (150, st), (255, 0, 0), 50)
+    cv2.line(result, (1400, st), (1200, st), (255, 0, 0), 50)
+
+    cv2.line(result, (350, st - 340), (150, st - 340), (255, 0, 0), 50)
+    cv2.line(result, (1400, st - 340), (1200, st - 340), (255, 0, 0), 50)
+    cv2.putText(result, '1 M', (600, st - 340), font, 5,
+                (255, 0, 0), 20, cv2.LINE_AA, False)
+
+    cv2.line(result, (350, st - 340 * 2), (150, st - 340 * 2), (255, 0, 0), 50)
+    cv2.line(result, (1400, st - 340 * 2), (1200, st - 340 * 2), (255, 0, 0), 50)
+    cv2.putText(result, '2 M', (600, st - 340 * 2), font, 5,
+                (255, 0, 0), 20, cv2.LINE_AA, False)
+
+    cv2.line(result, (350, st - 340 * 3), (150, st - 340 * 3), (255, 0, 0), 50)
+    cv2.line(result, (1400, st - 340 * 3), (1200, st - 340 * 3), (255, 0, 0), 50)
+    cv2.putText(result, '3 M', (600, st - 340 * 3), font, 5,
+                (255, 0, 0), 20, cv2.LINE_AA, False)
+    # print(np.linalg.inv(result))
+    # plt.imshow(result)
+    print(result)
+    result = np.array(result)
+    print('*' * 100)
+    IMAGE_H = 1080
+    IMAGE_W = 1920
+
+    result1 = cv2.warpPerspective(result, matrix, (IMAGE_W, IMAGE_H))
+    output = cv2.bitwise_or(copy_image, result1)
+
+
+    return output
 
 while cap.isOpened():
 

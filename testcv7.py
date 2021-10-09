@@ -120,8 +120,7 @@ cv2.putText(result, '3 M', (600,st-340*3), font, 5,
 print(result)
 result = np.array(result)
 print('*'*100)
-IMAGE_H = 1080
-IMAGE_W = 1920
+
 result1 = cv2.warpPerspective(result,matrix,(IMAGE_W,IMAGE_H))
 output = cv2.bitwise_or(copy_image, result1)
 # a = np.array(result)
