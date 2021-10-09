@@ -36,7 +36,7 @@ def process(image):
     ptB = [2000, 966]
 
     wi, hi = 1500, 1500
-    cv2.imshow('image', copy_image)
+    # cv2.imshow('image', copy_image)
     pts1 = np.float32([ptD, ptC, ptA, ptB])
     pts2 = np.float32([[0, 0], [wi, 0], [0, hi], [wi, hi]])
 
@@ -85,9 +85,10 @@ def process(image):
 cap = cv2.VideoCapture('./image/IMG_4244.mp4')
 success, img = cap.read()
 while success:
+
 	img = process(img)
-	# cv2.imshow('image', img)
-	if cv2.waitKey(100) & 0xFF == ord('q'):
+	cv2.imshow('image', img)
+	if cv2.waitKey(10) & 0xFF == ord('q'):
 		break
 	success, img = cap.read()
 

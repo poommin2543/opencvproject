@@ -7,24 +7,29 @@ def region_of_interest(img, vertices):
     mask = np.zeros_like(img)
     #mask = img
     match_mask_color=(255,0,255)
-    print(match_mask_color)
+    # print(match_mask_color)
     #cv2.fillPoly(mask, vertices, match_mask_color)
     cv2.fillPoly(mask, [points], match_mask_color)
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
 def process(image):
-    copy_image = image
+
     cropped_image = region_of_interest(image,
                                        np.array([points], np.int32), )
     gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+
+
+    copy_image = image
     # cv2.imshow('edges', edges)
     lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 100, minLineLength=100, maxLineGap=10)
-    print(lines)
+    # print(lines)
+
     for line in lines:
         x1, y1, x2, y2 = line[0]
         cv2.line(image, (x1, y1), (x2, y2), (0, 255, 0), 10)
 
+    # cv2.imshow('image', nnn)
 
 
     ptD = [700, 500]
@@ -62,27 +67,56 @@ def process(image):
                 (255, 0, 0), 20, cv2.LINE_AA, False)
     # print(np.linalg.inv(result))
     # plt.imshow(result)
-    print(result)
+    # print(result)
     result = np.array(result)
-    print('*' * 100)
+    # print('*' * 100)
     IMAGE_H = 1080
     IMAGE_W = 1920
 
     matrix = (np.linalg.inv(matrix))
     result1 = cv2.warpPerspective(result, matrix, (IMAGE_W, IMAGE_H))
     output = cv2.bitwise_or(copy_image, result1)
+    # cv2.imshow('image', output)
 
-    return output
+    return result1
+
+def output(img,mark):
+    ptD = [700, 500]
+    ptC = [1200, 486]
+    ptA = [0, 800]
+    ptB = [2000, 966]
+
+    sorted_pts = np.float32([ptC, ptD, ptA, ptB])
+    mask = np.zeros(mark.shape, dtype=np.uint8)
+
+    roi_corners = np.int32(sorted_pts)
+    print(sorted_pts)
+
+    cv2.fillConvexPoly(mask, roi_corners, (255, 255, 255))
+    mask = cv2.bitwise_not(mask)
+    # cv2.imshow('Fused Image', mask)
+    masked_image = cv2.bitwise_and(img, mask)
+    output = cv2.bitwise_or(mark, masked_image)
+    cv2.imshow('image', output)
+
+    # pass
 
 cap = cv2.VideoCapture('./image/IMG_4244.mp4')
-success, img = cap.read()
-while success:
+cap1 = cv2.VideoCapture('./image/IMG_4244.mp4')
+# success, img = cap.read()
+while cap.isOpened():
 
-	# cv2.imshow('image', img)
-    img = process(img)
-	if cv2.waitKey(100) & 0xFF == ord('q'):
-		break
-	success, img = cap.read()
+    ret, frame  = cap.read()
+    ret1, frame1 = cap1.read()
 
+    # process(frame)
+
+    output(frame1,process(frame))
+    # process(frame)
+    # frame = process(frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 cap.release()
+cv2.destroyAllWindows()
