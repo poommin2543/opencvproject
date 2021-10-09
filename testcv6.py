@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 import cv2
 import numpy as np
-
+# video line perspctive
 cap = cv2.VideoCapture('./image/IMG_4244.MOV')
 image = cv2.imread('IMG_4244.png')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

@@ -3,9 +3,12 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Finding-Car-Lanes-Without-Deep-Learning" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Image_Overlaying_Using_Perspective_Transform" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Lane-Lines-Detection-Python-OpenCV" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Lanes-Detection-with-OpenCV" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/SelfDrivingCar" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Tensorflow-Object-Detection1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Tensorflow-Object-Detection1/models" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/advanced-lane-detection" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/python-autoclicker" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/street_lanes_finder" vcs="Git" />

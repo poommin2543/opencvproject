@@ -2,7 +2,7 @@ import matplotlib.pylab as plt
 import cv2
 import numpy as np
 import imutils
-
+# perspctive + line
 image = cv2.imread('IMG_4244.png')
 
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -111,7 +111,7 @@ cv2.line(result,(350,st-340*3),(150,st-340*3),(255,0,0),50)
 cv2.line(result,(1400,st-340*3),(1200,st-340*3),(255,0,0),50)
 cv2.putText(result, '3 M', (600,st-340*3), font, 5,
                   (255,0,0), 20, cv2.LINE_AA, False)
-print(np.linalg.inv(result))
+# print(np.linalg.inv(result))
 plt.imshow(result)
 # plt.imshow(image)
 plt.show()
