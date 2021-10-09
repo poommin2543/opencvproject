@@ -12,11 +12,8 @@ def region_of_interest(img, vertices):
     cv2.fillPoly(mask, [points], match_mask_color)
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
-
 def process(image):
     copy_image = image
-
-
     cropped_image = region_of_interest(image,
                                        np.array([points], np.int32), )
     gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
@@ -36,7 +33,7 @@ def process(image):
     ptB = [2000, 966]
 
     wi, hi = 1500, 1500
-    cv2.imshow('image', copy_image)
+
     pts1 = np.float32([ptD, ptC, ptA, ptB])
     pts2 = np.float32([[0, 0], [wi, 0], [0, hi], [wi, hi]])
 
@@ -75,21 +72,17 @@ def process(image):
     result1 = cv2.warpPerspective(result, matrix, (IMAGE_W, IMAGE_H))
     output = cv2.bitwise_or(copy_image, result1)
 
-
     return output
 
-#
-# cap = cv2.VideoCapture('./image/IMG_4244.MOV')
-# image = cv2.imread('IMG_4244.png')
-# image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 cap = cv2.VideoCapture('./image/IMG_4244.mp4')
 success, img = cap.read()
 while success:
-	img = process(img)
+
 	# cv2.imshow('image', img)
+    img = process(img)
 	if cv2.waitKey(100) & 0xFF == ord('q'):
 		break
 	success, img = cap.read()
 
+
 cap.release()
-cv2.destroyAllWindows()
