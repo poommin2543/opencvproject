@@ -76,21 +76,41 @@ def process(image):
     output = cv2.bitwise_or(copy_image, result1)
 
 
-    return output
+    return result1
 
-#
+def output(img,mark):
+    tod = 10
+    ptD = [700+tod, 500+tod]
+    ptC = [1200+tod, 486+tod]
+    ptA = [0, 800]
+    ptB = [2000-tod, 966-tod]
+
+    sorted_pts = np.float32([ptC, ptD, ptA, ptB])
+    mask = np.zeros(mark.shape, dtype=np.uint8)
+
+    roi_corners = np.int32(sorted_pts)
+    print(sorted_pts)
+
+    cv2.fillConvexPoly(mask, roi_corners, (255, 255, 255))
+    mask = cv2.bitwise_not(mask)
+    # cv2.imshow('Fused Image', mask)
+    masked_image = cv2.bitwise_and(img, mask)
+    output = cv2.bitwise_or(mark, masked_image)
+    cv2.imshow('image', output)
+
 # cap = cv2.VideoCapture('./image/IMG_4244.MOV')
 # image = cv2.imread('IMG_4244.png')
 # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 cap = cv2.VideoCapture('./image/IMG_4244.mp4')
+cap1 = cv2.VideoCapture('./image/IMG_4244.mp4')
 success, img = cap.read()
+success1, img1 = cap.read()
 while success:
-
-	img = process(img)
-	cv2.imshow('image', img)
-	if cv2.waitKey(10) & 0xFF == ord('q'):
-		break
-	success, img = cap.read()
+    output(img1, process(img))
+    success, img = cap.read()
+    success1, img1 = cap.read()
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 cap.release()
 cv2.destroyAllWindows()
