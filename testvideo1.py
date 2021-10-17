@@ -1,5 +1,14 @@
 import cv2
 import numpy as np
+import pandas as pd
+import tensorflow as tf
+import tensorflow_hub as hub
+
+# Carregar modelos
+detector = hub.load("https://tfhub.dev/tensorflow/efficientdet/lite2/detection/1")
+labels = pd.read_csv('labels.csv', sep=';', index_col='ID')
+labels = labels['OBJECT (2017 REL.)']
+
 # naive version
 points = np.array([[0, 450], [1920, 450], [1920,1080], [0, 1080]])
 # print(region_of_interest_vertices)
@@ -7,11 +16,58 @@ def region_of_interest(img, vertices):
     mask = np.zeros_like(img)
     #mask = img
     match_mask_color=(255,0,255)
-    print(match_mask_color)
+    # print(match_mask_color)
     #cv2.fillPoly(mask, vertices, match_mask_color)
     cv2.fillPoly(mask, [points], match_mask_color)
     masked_image = cv2.bitwise_and(img, mask)
     return masked_image
+
+def image_detecion(img):
+
+
+
+
+    width = 1920
+    height = 1080
+
+    # Resize to respect the input_shape
+    inp = cv2.resize(img, (width, height))
+    # inp = frame
+    # Convert img to RGB
+    rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+    # Is optional but i recommend (float convertion and convert img to tensor image)
+    rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.uint8)
+
+    # Add dims to rgb_tensor
+    rgb_tensor = tf.expand_dims(rgb_tensor, 0)
+
+    boxes, scores, classes, num_detections = detector(rgb_tensor)
+
+    pred_labels = classes.numpy().astype('int')[0]
+
+    pred_labels = [labels[i] for i in pred_labels]
+    pred_boxes = boxes.numpy()[0].astype('int')
+    pred_scores = scores.numpy()[0]
+    # loop throughout the faces detected and place a box around it
+
+    for score, (ymin, xmin, ymax, xmax), label in zip(pred_scores, pred_boxes, pred_labels):
+        if score < 0.5:
+            continue
+
+        score_txt = f'{100 * round(score, 0)}'
+        img_boxes = cv2.rectangle(inp, (xmin, ymax), (xmax, ymin), (0, 255, 0), 3)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(img_boxes, label, (xmin, ymax - 10), font, 1, (255, 0, 0), 3, cv2.LINE_AA)
+        # cv2.putText(img_boxes,score_txt,(xmax, ymax-10), font, 1, (255,0,0), 3, cv2.LINE_AA)
+
+        print(ymin, xmin, ymax, xmax)
+
+    # Display the resulting frame
+    cv2.imshow('black and white', img_boxes)
+
+
 
 def process(image):
     copy_image = image
@@ -41,7 +97,7 @@ def process(image):
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
     result = cv2.warpPerspective(image, matrix, (wi, hi))
 
-    cv2.imshow('image', result)
+    # cv2.imshow('image', result)
     font = cv2.FONT_HERSHEY_SIMPLEX
     st = hi
     m1 = 325  # 1200/3.5
@@ -73,9 +129,9 @@ def process(image):
 
     # print(np.linalg.inv(result))
     # plt.imshow(result)
-    print(result)
+    # print(result)
     result = np.array(result)
-    print('*' * 100)
+    # print('*' * 100)
     IMAGE_H = 1080
     IMAGE_W = 1920
 
@@ -83,12 +139,11 @@ def process(image):
     result1 = cv2.warpPerspective(result, matrix, (IMAGE_W, IMAGE_H))
     # output = cv2.bitwise_or(copy_image, result1)
 
-
-
     return result1
 
+
 def output(img,mark):
-    cv2.imshow('image', img)
+    # cv2.imshow('image', img)
     ptD = [750, 640]
     ptC = [1310, 640]
     ptA = [0, 1060]
@@ -98,24 +153,27 @@ def output(img,mark):
     mask = np.zeros(mark.shape, dtype=np.uint8)
 
     roi_corners = np.int32(sorted_pts)
-    print(sorted_pts)
+    # print(sorted_pts)
 
     cv2.fillConvexPoly(mask, roi_corners, (255, 255, 255))
     mask = cv2.bitwise_not(mask)
     # cv2.imshow('Fused Image', mask)
     masked_image = cv2.bitwise_and(img, mask)
     output = cv2.bitwise_or(mark, masked_image)
-    cv2.imshow('image', output)
+    image_detecion(output)
+    # cv2.imshow('image', output)
 
-# cap = cv2.VideoCapture('./image/IMG_4244.MOV')
-# image = cv2.imread('IMG_4244.png')
-# image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
 cap = cv2.VideoCapture('./image/Untitled.MP4')
-cap1 = cv2.VideoCapture('./image/Untitled.MP4')
+cap1 = cap
 success, img = cap.read()
 success1, img1 = cap.read()
 while success:
-    output(img1, process(img))
+    try:
+        output(img1, process(img))
+    except:
+        print("error")
+        continue
     success, img = cap.read()
     success1, img1 = cap.read()
     if cv2.waitKey(10) & 0xFF == ord('q'):

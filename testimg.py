@@ -2,12 +2,75 @@ import matplotlib.pylab as plt
 import cv2
 import numpy as np
 import imutils
+import pandas as pd
+import tensorflow as tf
+import tensorflow_hub as hub
+
+# Carregar modelos
+detector = hub.load("https://tfhub.dev/tensorflow/efficientdet/lite2/detection/1")
+labels = pd.read_csv('labels.csv', sep=';', index_col='ID')
+labels = labels['OBJECT (2017 REL.)']
 # perspctive + line
 image = cv2.imread('./image/IMG_4743.png')
 
 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 copy_image = cv2.imread('./image/IMG_4743.png')
 copy_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+def image_detecion(img):
+
+    width = 1920
+    height = 1080
+
+    # Resize to respect the input_shape
+    inp = cv2.resize(img, (width, height))
+    # inp = frame
+    # Convert img to RGB
+    rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+
+    # Is optional but i recommend (float convertion and convert img to tensor image)
+    rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.uint8)
+
+    # Add dims to rgb_tensor
+    rgb_tensor = tf.expand_dims(rgb_tensor, 0)
+
+    boxes, scores, classes, num_detections = detector(rgb_tensor)
+
+    pred_labels = classes.numpy().astype('int')[0]
+
+    pred_labels = [labels[i] for i in pred_labels]
+    pred_boxes = boxes.numpy()[0].astype('int')
+    pred_scores = scores.numpy()[0]
+    # loop throughout the faces detected and place a box around it
+
+    for score, (ymin, xmin, ymax, xmax), label in zip(pred_scores, pred_boxes, pred_labels):
+        if score < 0.5:
+            continue
+
+        score_txt = f'{100 * round(score, 0)}'
+        img_boxes = cv2.rectangle(inp, (xmin, ymax), (xmax, ymin), (0, 255, 0), 3)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(img_boxes, label, (xmin, ymax - 10), font, 1, (255, 0, 0), 3, cv2.LINE_AA)
+        # cv2.putText(img_boxes,score_txt,(xmax, ymax-10), font, 1, (255,0,0), 3, cv2.LINE_AA)
+
+        print(ymin, xmin, ymax, xmax)
+        print(xmax,xmin ,end=" = ")
+        print(xmax-xmin)
+
+        w = 1.67
+        f = 0
+        p = (xmax-xmin)
+        d = 5
+
+        f = (d*p)/w
+        print(f)
+        print(type(f))
+    # Display the resulting frame
+    plt.imshow(img_boxes)
+    plt.show()
+
+
 print(image.shape)
 height = image.shape[0]
 width = image.shape[1]
@@ -35,7 +98,7 @@ region_of_interest_vertices = [
 IMAGE_H = 1080
 IMAGE_W = 1920
 
-points = np.array([[0, 450], [1920, 450], [1920, 1080], [0, 1080]])
+points = np.array([[0, 600], [1920, 450], [1920, 1080], [0, 1080]])
 print(region_of_interest_vertices)
 
 def nothing(x):
@@ -139,11 +202,16 @@ cv2.line(result,(550,st-m1*i),(400,st-m1*i),(255,0,0),50)
 cv2.line(result,(1100,st-m1*i),(950,st-m1*i),(255,0,0),50)
 cv2.putText(result, '4 M', (600,st-m1*i), font, 5,
                   (255,0,0), 20, cv2.LINE_AA, False)
+
+i+=1
+cv2.line(result,(550,st-m1*i),(400,st-m1*i),(255,0,0),50)
+cv2.line(result,(1100,st-m1*i),(950,st-m1*i),(255,0,0),50)
+cv2.putText(result, '5 M', (600,st-m1*i), font, 5,
+                  (255,0,0), 20, cv2.LINE_AA, False)
+
 # print(np.linalg.inv(result))
 
 matrix = (np.linalg.inv(matrix))
 result1 = cv2.warpPerspective(result,matrix,(IMAGE_W,IMAGE_H))
 output = cv2.bitwise_or(copy_image, result1)
-plt.imshow(result)
-# plt.imshow(image)
-plt.show()
+image_detecion(output)
