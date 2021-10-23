@@ -2,14 +2,8 @@ import matplotlib.pylab as plt
 import cv2
 import numpy as np
 import imutils
-import pandas as pd
-import tensorflow as tf
-import tensorflow_hub as hub
 
-# Carregar modelos
-detector = hub.load("https://tfhub.dev/tensorflow/efficientdet/lite2/detection/1")
-labels = pd.read_csv('labels.csv', sep=';', index_col='ID')
-labels = labels['OBJECT (2017 REL.)']
+
 # perspctive + line
 image = cv2.imread('./image/IMG_4743.png')
 
@@ -17,72 +11,7 @@ image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 copy_image = cv2.imread('./image/IMG_4743.png')
 copy_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-def image_detecion(img):
 
-    width = 1920
-    height = 1080
-
-    # Resize to respect the input_shape
-    inp = cv2.resize(img, (width, height))
-    # inp = frame
-    # Convert img to RGB
-    rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
-
-    # Is optional but i recommend (float convertion and convert img to tensor image)
-    rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.uint8)
-
-    # Add dims to rgb_tensor
-    rgb_tensor = tf.expand_dims(rgb_tensor, 0)
-
-    boxes, scores, classes, num_detections = detector(rgb_tensor)
-
-    pred_labels = classes.numpy().astype('int')[0]
-
-    pred_labels = [labels[i] for i in pred_labels]
-    pred_boxes = boxes.numpy()[0].astype('int')
-    pred_scores = scores.numpy()[0]
-    # loop throughout the faces detected and place a box around it
-
-    for score, (ymin, xmin, ymax, xmax), label in zip(pred_scores, pred_boxes, pred_labels):
-        if score < 0.5:
-            continue
-
-        score_txt = f'{100 * round(score, 0)}'
-        img_boxes = cv2.rectangle(inp, (xmin, ymax), (xmax, ymin), (0, 255, 0), 3)
-
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(img_boxes, label, (xmin, ymax - 10), font, 1, (255, 0, 0), 3, cv2.LINE_AA)
-        # cv2.putText(img_boxes,score_txt,(xmax, ymax-10), font, 1, (255,0,0), 3, cv2.LINE_AA)
-
-        print(ymin, xmin, ymax, xmax)
-        print(xmax,xmin ,end=" = ")
-        print(xmax-xmin)
-
-        # w = 1.67
-        # f = 0
-        # p = (xmax-xmin)
-        # d = 5
-        #
-        # f = (d*p)/w
-        # print(f)
-        # print(type(f))
-        w = 1.67
-        f = 401.1976047904192
-        p = (xmax - xmin)
-        d = 0
-
-        d = (f * w) / p
-
-        d = str(d)
-        d = d[0:4]
-        label1 = label + " " + d + " Meter !!!"
-        cv2.putText(img_boxes,label1, (300, 200), font, 5, (255, 0, 0), 10, cv2.LINE_AA)
-    # Display the resulting frame
-    plt.imshow(img_boxes)
-    plt.show()
-
-
-print(image.shape)
 height = image.shape[0]
 width = image.shape[1]
 
@@ -109,7 +38,7 @@ region_of_interest_vertices = [
 IMAGE_H = 1080
 IMAGE_W = 1920
 
-points = np.array([[0, 600], [1920, 450], [1920, 1080], [0, 1080]])
+points = np.array([[0, 600], [1920, 600], [1920, 1080], [0, 1080]])
 print(region_of_interest_vertices)
 
 def nothing(x):
@@ -128,9 +57,10 @@ def region_of_interest(img, vertices):
 cropped_image = region_of_interest(image,
                                    np.array([region_of_interest_vertices], np.int32), )
 gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
-edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+edges = cv2.Canny(gray, 5, 150, apertureSize=3)
 # print(edges)
-lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 100, minLineLength=100, maxLineGap=10)
+plt.imshow(edges)
+lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 100, minLineLength=1, maxLineGap=100)
 # print(lines)
 
 ptD = [800, 640]
@@ -225,4 +155,5 @@ cv2.putText(result, '5 M', (600,st-m1*i), font, 5,
 matrix = (np.linalg.inv(matrix))
 result1 = cv2.warpPerspective(result,matrix,(IMAGE_W,IMAGE_H))
 output = cv2.bitwise_or(copy_image, result1)
-image_detecion(output)
+# plt.imshow(output)
+plt.show()
